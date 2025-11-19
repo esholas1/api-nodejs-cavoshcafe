@@ -7,5 +7,6 @@ router
     .post("/login", controller.getCliente )
     .post("/", controller.setCliente )
 
-
+    .post("/codigo", controller.getClienteCodigo)
+    
 export default router

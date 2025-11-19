@@ -1,10 +1,7 @@
 import { pool } from '../db/db.js'
 
 const getCliente = async (req, res) => {
-    console.log( req.body)
     const rows = await pool.query('call sp_getCliente(?,?)', [ ...Object.values( req.body ) ])
-    console.log( rows )
-    console.log( rows[0] )
     return ( rows[0] )
 }
 
@@ -21,7 +18,29 @@ const setCliente = async (req, res) => {
     return ( { "update" : true } )
 }
 
+const getClienteCodigo = async (req, res) => {
+    let rows
+    
+    try {
+         [ rows ] = await pool.query('call sp_getClienteCodigo(?)', [ req.body.correo ])
+    } catch (error) {
+        return ( { "error" : "El servidor no está disponible"} )
+    }
+
+    if ( rows[0][0].id) 
+        return ( { "id": rows[0][0].id, "codigo" : rows[0][0].codigo } )
+
+    if ( typeof rows[0] != 'undefined' ) 
+        return ( { "error" : rows[0][0].error } )
+}
+
+const getClienteCodigoValidar = async (req, res) => {
+    const rows = await pool.query('call sp_getCliente(?,?)', [ ...Object.values( req.body ) ])
+    return ( rows[0] )
+}
+
 export const services = {
     getCliente, setCliente,
-
+    getClienteCodigo,
+    
 }

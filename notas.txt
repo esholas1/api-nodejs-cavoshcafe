@@ -3,4 +3,32 @@ Set-ExecutionPolicy RemoteSigned
 npm init -y
 npm install dotenv express multer mysql2 cors
 
-npm run start
+npm install
+npm start
+
+-----------------------------
+(cliente.services.js)
+import { pool } from '../db/db.js'
+
+const getCliente = async (req, res) => {
+    const rows = await pool.query('call sp_getCliente(?,?)', [ ...Object.values( req.body ) ])
+    return ( rows[0] )
+}
+
+const setCliente = async (req, res) => {
+    const id = req.body.id
+    const [ rows ] = await pool.query('call sp_setCliente(?,?,?,?)', [ ...Object.values( req.body ) ])
+
+    if ( id == 0 && rows[0][0].insertID ) {
+        req.body.id = rows[0][0].insertID
+        return ( req.body )
+    }
+
+    if ( typeof rows[0] != 'undefined' ) return ( { "error" : rows[0][0].error } )
+    return ( { "update" : true } )
+}
+
+export const service = {
+    getCliente, setCliente,
+
+}
